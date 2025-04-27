@@ -1,36 +1,279 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Multi-Database E-Ticaret Projesi
 
-## Getting Started
+Bu proje, Next.js tabanlı bir e-ticaret uygulamasıdır. MongoDB ve MySQL veritabanlarını birlikte kullanarak hibrit bir veritabanı mimarisi üzerine inşa edilmiştir.
 
-First, run the development server:
+## Proje Hakkında
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Bu e-ticaret platformu aşağıdaki özellikleri içermektedir:
+
+- Kullanıcı kaydı ve kimlik doğrulama (Next-Auth)
+- Ürün yönetimi (listeleme, ekleme, düzenleme, silme)
+- Sepet yönetimi
+- Tedarikçi paneli
+- Profil yönetimi
+- Duyarlı (responsive) tasarım
+- Gerçek zamanlı bildirimler
+
+## Teknoloji Yığını
+
+- **Frontend**: Next.js, React, TypeScript
+- **UI Bileşenleri**: Tailwind CSS, Shadcn/UI
+- **Kimlik Doğrulama**: NextAuth.js
+- **Veritabanları**:
+  - MongoDB (Ürünler, sepet verileri için)
+  - MySQL (Kullanıcı verileri için)
+- **Diğer**: Sonner (bildirimler), Lucide React (ikonlar)
+
+## Kurulum
+
+### Ön Koşullar
+
+- Node.js (v18 veya üzeri)
+- npm/yarn/pnpm/bun
+- MongoDB veritabanı
+- MySQL veritabanı
+
+### Adımlar
+
+1. Projeyi klonlayın:
+   ```bash
+   git clone https://github.com/kemalcalak/MultiDB.git
+   cd multidb2
+   ```
+
+2. Bağımlılıkları yükleyin:
+   ```bash
+   npm install
+   ```
+
+3. `.env.local` dosyasını oluşturun ve aşağıdaki ortam değişkenlerini ayarlayın:
+   ```
+   # NextAuth
+   NEXTAUTH_SECRET=your_nextauth_secret
+   NEXTAUTH_URL=http://localhost:3000
+   
+   # JWT
+   JWT_SECRET=your_jwt_secret
+   
+   # MySQL Database
+   MYSQL_HOST=localhost
+   MYSQL_USER=root
+   MYSQL_DATABASE=ecommerce
+   
+   # MongoDB
+   MONGODB_CONNECT=your_mongodb_connection_string
+
+   # Mail SMTP (E-posta gönderimi için)
+   MAIL_PASS=your_email_password
+   MAIL_HOST=your_email_host
+   MAIL_PORT=your_email_port
+   MAIL_USER=your_email_user
+   
+   # Cloudinary (resim yükleme için)
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
+
+4. Geliştirme sunucusunu başlatın:
+   ```bash
+   npm run dev
+   ```
+
+5. Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın
+
+## Proje Yapısı
+
+```
+multidb2/
+├── app/                      # Next.js 13+ App Router yapısı
+│   ├── api/                  # API rotaları
+│   │   ├── auth/             # Kimlik doğrulama API'leri
+│   │   │   ├── [...nextauth]/  # NextAuth konfigürasyonu
+│   │   │   ├── profile/      # Profil yönetimi API'si
+│   │   │   ├── protected/    # Korumalı endpoint örneği
+│   │   │   └── register/     # Kullanıcı kaydı API'si
+│   │   ├── cart/             # Sepet API'leri
+│   │   ├── customer/         # Müşteri paneli API'leri
+│   │   ├── orders/           # Sipariş API'leri
+│   │   ├── supplier/         # Tedarikçi API'leri
+│   │   │   └── products/     # Tedarikçi ürün yönetimi API'si
+│   │   └── upload/           # Dosya yükleme API'si
+│   ├── auth/                 # Kimlik doğrulama sayfaları
+│   │   ├── login/            # Giriş sayfası
+│   │   └── register/         # Kayıt sayfası
+│   ├── cart/                 # Sepet sayfası
+│   ├── profile/              # Kullanıcı profil sayfası
+│   ├── supplier/             # Tedarikçi sayfaları
+│   │   └── products/         # Tedarikçi ürün yönetimi sayfası
+│   ├── globals.css           # Global stil tanımlamaları
+│   ├── layout.tsx            # Kök düzen bileşeni
+│   └── page.tsx              # Ana sayfa
+├── components/               # Yeniden kullanılabilir bileşenler
+│   ├── ui/                   # UI bileşenleri (shadcn/ui)
+│   │   ├── alert-dialog.tsx  # Uyarı iletişim kutusu bileşeni
+│   │   ├── button.tsx        # Buton bileşeni
+│   │   ├── dialog.tsx        # Modal dialog bileşeni
+│   │   ├── input.tsx         # Input bileşeni
+│   │   ├── label.tsx         # Label bileşeni
+│   │   ├── table.tsx         # Tablo bileşeni
+│   │   └── textarea.tsx      # Çok satırlı metin girişi bileşeni
+│   └── Header.tsx            # Üst bilgi bileşeni
+├── lib/                      # Yardımcı işlevler ve yardımcı programlar
+│   ├── auth/                 # Kimlik doğrulama yardımcıları
+│   │   └── middleware.ts     # Kimlik doğrulama middleware'i
+│   ├── db/                   # Veritabanı bağlantıları
+│   │   ├── mongodb.ts        # MongoDB bağlantısı
+│   │   └── mysql.ts          # MySQL bağlantısı
+│   ├── email.ts              # E-posta gönderme fonksiyonları
+│   └── utils.ts              # Genel yardımcı fonksiyonlar
+├── models/                   # Veritabanı modelleri
+│   ├── Cart.ts               # MongoDB sepet modeli
+│   ├── Order.ts              # MongoDB sipariş modeli
+│   ├── Product.ts            # MongoDB ürün modeli
+│   ├── ResetToken.ts         # MySQL şifre sıfırlama token modeli
+│   └── User.ts               # MySQL kullanıcı modeli
+├── public/                   # Statik dosyalar
+├── .env.local                # Ortam değişkenleri (oluşturulacak)
+├── next.config.js            # Next.js yapılandırması
+├── next.config.mjs           # Alternatif Next.js yapılandırması
+├── postcss.config.mjs        # PostCSS yapılandırması
+├── tailwind.config.ts        # Tailwind CSS yapılandırması
+└── package.json              # Proje bağımlılıkları
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Veritabanı Yapısı
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### MySQL Tabloları
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **users**: Kullanıcı kimlik bilgilerini saklar
+  - id (PK)
+  - name
+  - email
+  - password (hashlenir)
+  - role (kullanıcı rolü: customer, supplier)
+  - createdAt
+  - updatedAt
 
-## Learn More
+- **reset_tokens**: Şifre sıfırlama tokenlarını saklar
+  - id (PK)
+  - userId (FK - users tablosuna referans)
+  - token
+  - expiresAt
+  - used
+  - createdAt
+  - updatedAt
 
-To learn more about Next.js, take a look at the following resources:
+### MySQL Kurulum SQL Kodları
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Aşağıdaki SQL kodlarını kullanarak gerekli MySQL veritabanını ve tabloları oluşturabilirsiniz:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+```sql
+-- Veritabanını oluştur
+CREATE DATABASE IF NOT EXISTS ecommerce;
+USE ecommerce;
+```
+    
+```sql
+-- Kullanıcılar tablosu
+CREATE TABLE IF NOT EXISTS users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  role ENUM('customer', 'supplier') NOT NULL DEFAULT 'customer',
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_email (email),
+  INDEX idx_role (role)
+);
+```
+    
+```sql
+-- Şifre sıfırlama token tablosu
+CREATE TABLE IF NOT EXISTS reset_tokens (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  userId INT UNSIGNED NOT NULL,
+  token VARCHAR(255) NOT NULL UNIQUE,
+  expiresAt DATETIME NOT NULL,
+  used BOOLEAN NOT NULL DEFAULT FALSE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_token (token),
+  INDEX idx_userId (userId)
+);
+```
 
-## Deploy on Vercel
+### MongoDB Koleksiyonları
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **products**: Ürün bilgilerini saklar
+  - _id (PK)
+  - name
+  - description
+  - price
+  - imageUrl
+  - stock
+  - category (opsiyonel)
+  - features (opsiyonel dizi)
+  - ratings (kullanıcı derecelendirmeleri dizisi)
+  - averageRating
+  - createdAt
+  - updatedAt
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- **carts**: Kullanıcı sepetlerini saklar
+  - _id (PK)
+  - userId (MySQL User tablosundaki id'ye referans)
+  - items (ürünler dizisi)
+    - productId (MongoDB Product ID'sine referans)
+    - name
+    - price
+    - quantity
+    - imageUrl
+  - totalPrice
+  - active
+  - createdAt
+  - updatedAt
+
+- **orders**: Siparişleri saklar
+  - _id (PK)
+  - userId (MySQL User tablosundaki id'ye referans)
+  - orderItems (sipariş edilen ürünlerin dizisi)
+    - productId (MongoDB Product ID'sine referans)
+    - name
+    - price
+    - quantity
+  - shippingAddress
+    - address
+    - city
+    - postalCode
+    - country
+  - paymentMethod
+  - totalPrice
+  - isPaid
+  - paidAt
+  - isDelivered
+  - deliveredAt
+  - createdAt
+  - updatedAt
+
+## Temel İş Akışları
+
+### Kullanıcı Kimlik Doğrulama
+
+1. Kullanıcı kayıt olur (MySQL'de saklanır)
+2. Kullanıcı giriş yapar ve bir JWT token alır
+3. Bu token sonraki isteklerde kullanılır
+
+### Ürün Yönetimi (Tedarikçiler için)
+
+1. Tedarikçi giriş yapar
+2. Ürün ekler/düzenler/siler (MongoDB'de saklanır)
+3. Ürünleri listeler ve yönetir
+
+### Alışveriş Süreci
+
+1. Kullanıcı ürünleri görüntüler
+2. Ürünleri sepete ekler (MongoDB'de saklanır)
+3. Sepeti görüntüler ve günceller
+4. Sipariş verir
