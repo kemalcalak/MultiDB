@@ -1,12 +1,14 @@
 import { testMySQLConnection } from './mysql';
 import { connectToMongoDB } from './mongodb';
 import User from '@/models/User';
+import ResetToken from '@/models/ResetToken'; // ResetToken modelini import et
 
 // Veritabanı modellerini senkronize et
 export async function syncDatabase() {
   try {
-    // MySQL tablo senkronizasyonu - sadece User tablosu
+    // MySQL tablo senkronizasyonu - User ve ResetToken tabloları
     await User.sync();
+    await ResetToken.sync();
     
     console.log('MySQL tabloları senkronize edildi');
   } catch (error) {
