@@ -2,6 +2,9 @@ import NextAuth, { type AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: AuthOptions = {
+  debug: true, // hata ayıklama için
+  secret: process.env.NEXTAUTH_SECRET, // .env.local içinde NEXTAUTH_SECRET tanımlayın
+  session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -10,8 +13,9 @@ export const authOptions: AuthOptions = {
         password: { label: "Şifre", type: "password" }
       },
       async authorize(credentials) {
-        // biz kendi /api/auth/login endpoint’imize POST atıyoruz
-        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/login`, {
+        // fallback ile base url
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+        const res = await fetch(`${baseUrl}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -28,7 +32,6 @@ export const authOptions: AuthOptions = {
       }
     })
   ],
-  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }: { token: import("next-auth/jwt").JWT; user?: import("next-auth").DefaultUser }) {
       if (user) token.user = user;
