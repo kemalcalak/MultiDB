@@ -1,22 +1,26 @@
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey12345';
+const JWT_EXPIRES_IN = '7d'; // 7 gün geçerli token
 
-export interface TokenPayload {
+// JWT payload tipini genişletiyoruz, role alanını ekleyerek
+interface JWTPayload {
   id: number;
   email: string;
+  role: string; // Rol bilgisi eklendi
 }
 
-// JWT token oluşturma
-export function createToken(payload: TokenPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+// Token oluşturma
+export function createToken(payload: JWTPayload): string {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN
+  });
 }
 
-// JWT token doğrulama
-export function verifyToken(token: string): TokenPayload | null {
+// Token doğrulama
+export function verifyToken(token: string): JWTPayload | null {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    return decoded;
+    return jwt.verify(token, JWT_SECRET) as JWTPayload;
   } catch (error) {
     return null;
   }
