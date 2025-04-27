@@ -1,37 +1,30 @@
-// Email gönderme servisi
-// Not: Bu basitleştirilmiş bir örnek, gerçek uygulamada bir SMTP servisi kullanılmalıdır (NodeMailer, SendGrid vb.)
+import nodemailer from 'nodemailer'
+
 
 interface EmailOptions {
-  to: string;
-  subject: string;
-  text?: string;
-  html?: string;
+  to: string
+  subject: string
+  html: string
 }
 
-/**
- * Email gönderme fonksiyonu
- * Gerçek uygulamada bu fonksiyon bir SMTP servisi kullanmalıdır
- */
+const transporter = nodemailer.createTransport({
+  host: process.env.MAIL_HOST,
+  port: Number(process.env.MAIL_PORT),
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+})
+
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
-  try {
-    // Geliştirme amaçlı konsola yazdırma
-    console.log('==========================================');
-    console.log('EMAİL GÖNDERİLİYOR');
-    console.log('------------------------------------------');
-    console.log(`Alıcı: ${options.to}`);
-    console.log(`Konu: ${options.subject}`);
-    console.log('------------------------------------------');
-    console.log(options.html || options.text);
-    console.log('==========================================');
-    
-    // Gerçek uygulamada SMTP servisi çağrılacak
-    // Örnek: await nodemailer.sendMail(options);
-    
-    return true;
-  } catch (error) {
-    console.error('Email gönderilemedi:', error);
-    return false;
-  }
+  await transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to: options.to,
+    subject: options.subject,
+    html: options.html,
+  })
+  return true
 }
 
 /**
@@ -56,7 +49,7 @@ export async function sendPasswordResetEmail(
       <p>İyi günler,</p>
       <p>E-Ticaret Ekibi</p>
     `,
-  };
+  }
 
-  return sendEmail(options);
+  return sendEmail(options)
 }
