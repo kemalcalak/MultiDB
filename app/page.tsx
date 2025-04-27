@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 import mongoose from "mongoose";
+import AddToCartButton from '@/components/AddToCartButton';
 
 // Ürün tipi tanımı
 type Product = {
@@ -44,17 +45,19 @@ export default async function Home() {
   const products = await getProducts();
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8">
-      <h1 className="text-3xl font-bold mb-8">Ürünlerimiz</h1>
+    <main className="flex min-h-screen flex-col items-center p-6 md:p-24">
+      <div className="mt-8 mb-4">
+        <h1 className="text-3xl font-bold">Ürünlerimiz</h1>
+      </div>
       
       {products.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-xl text-gray-500">Henüz ürün bulunmamaktadır.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
           {products.map((product) => (
-            <div key={product._id} className="border rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+            <div key={product._id} className="border rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
               <div className="relative h-48 w-full">
                 {product.imageUrl ? (
                   <Image
@@ -79,6 +82,7 @@ export default async function Home() {
                     {product.stock > 0 ? `${product.stock} adet stokta` : 'Stokta yok'}
                   </span>
                 </div>
+                <AddToCartButton product={product} />
               </div>
             </div>
           ))}
