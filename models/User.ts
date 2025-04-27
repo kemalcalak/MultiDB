@@ -8,6 +8,7 @@ interface UserAttributes {
   email: string;
   password: string;
   name: string;
+  role: string; // Yeni eklenen rol alanı
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -20,6 +21,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public email!: string;
   public password!: string;
   public name!: string;
+  public role!: string; // Yeni eklenen rol alanı
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -45,6 +47,11 @@ User.init(
     },
     name: {
       type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM('customer', 'supplier'), // Müşteri veya tedarikçi rolü
+      defaultValue: 'customer',
       allowNull: false,
     },
   },

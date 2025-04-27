@@ -34,14 +34,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // JWT token oluştur
-    const token = createToken({ id: user.id, email: user.email });
+    // JWT token oluştur (rol bilgisini içerecek şekilde)
+    const token = createToken({ 
+      id: user.id, 
+      email: user.email,
+      role: user.role 
+    });
 
     // Kullanıcı bilgilerini döndür (şifre hariç)
     const userData = {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role
     };
 
     return NextResponse.json({
@@ -49,9 +54,8 @@ export async function POST(request: Request) {
       user: userData,
       token
     });
-
-  } catch (error) {
-    console.error('Giriş hatası:', error);
+  } catch (error: any) {
+    console.error('Giriş sırasında bir hata oluştu:', error);
     return NextResponse.json(
       { error: 'Giriş işlemi sırasında bir hata oluştu' },
       { status: 500 }
