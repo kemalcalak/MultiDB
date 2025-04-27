@@ -1,7 +1,7 @@
 import { testMySQLConnection } from './mysql';
 import { connectToMongoDB } from './mongodb';
 import User from '@/models/User';
-import ResetToken from '@/models/ResetToken'; // ResetToken modelini import et
+import ResetToken from '@/models/ResetToken';
 
 // Veritabanı modellerini senkronize et
 export async function syncDatabase() {
@@ -9,6 +9,7 @@ export async function syncDatabase() {
     // MySQL tablo senkronizasyonu - User ve ResetToken tabloları
     await User.sync();
     await ResetToken.sync();
+    // Not: Product artık MongoDB'de tutulduğu için burada senkronize edilmiyor
     
     console.log('MySQL tabloları senkronize edildi');
   } catch (error) {
@@ -20,24 +21,22 @@ export async function syncDatabase() {
 export async function initDatabases() {
   try {
     // MySQL bağlantısını test et
-    const mysqlConnected = await testMySQLConnection();
+    const isMySQLConnected = await testMySQLConnection();
     
-    if (mysqlConnected) {
-      await syncDatabase();
+    if (!isMySQLConnected) {
+      console.error('MySQL bağlantısı kurulamadı. Uygulamanızda MySQL gerektiren özellikler çalışmayabilir.');
     }
     
-    // MongoDB'ye bağlan
+    // MySQL modellerini senkronize et
+    await syncDatabase();
+    
+    // MongoDB bağlantısını kur
     await connectToMongoDB();
     
-    return {
-      mysqlConnected,
-      mongoConnected: true,
-    };
+    console.log('Tüm veritabanı bağlantıları başarıyla kuruldu');
+    return true;
   } catch (error) {
-    console.error('Veritabanı başlatma hatası:', error);
-    return {
-      mysqlConnected: false,
-      mongoConnected: false,
-    };
+    console.error('Veritabanı bağlantıları kurulurken hata oluştu:', error);
+    return false;
   }
 }

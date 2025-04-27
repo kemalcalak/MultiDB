@@ -30,7 +30,7 @@ export default function RegisterPage() {
       <h1 className="text-2xl mb-4">Kayıt Ol</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="name">İsim</Label>
+          <Label htmlFor="name">İsim ve Soyad</Label>
           <Input id="name" value={name} onChange={e => setName(e.target.value)} required />
         </div>
         <div>
@@ -48,8 +48,8 @@ export default function RegisterPage() {
               <SelectValue placeholder="Rol seçin" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="customer">Customer</SelectItem>
-              <SelectItem value="supplier">Supplier</SelectItem>
+              <SelectItem value="customer">Müşteri</SelectItem>
+              <SelectItem value="supplier">Tedarikçi</SelectItem>
             </SelectContent>
           </Select>
         </div>
