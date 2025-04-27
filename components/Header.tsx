@@ -11,12 +11,16 @@ export default function Header() {
             <h1 className="cursor-pointer">AKC - TEK - EU</h1>
         </Link>
       {!session ? (
-        <>
+        <div className="flex gap-4 items-center">
+
           <Link href="/auth/login" className="text-blue-600 hover:underline">Giriş Yap</Link>
           <Link href="/auth/register" className="text-blue-600 hover:underline">Kayıt Ol</Link>
-        </>
+        </div>
       ) : (
         <div className="flex gap-4 items-center">
+            {session.user?.role === "supplier" && (
+              <Link href="/supplier/products" className="text-blue-600 hover:underline">Ürünlerim</Link>
+            )}
             <Link href="/profile" className="text-blue-600 hover:underline">Profil</Link>
           <button
             onClick={() => signOut()}
